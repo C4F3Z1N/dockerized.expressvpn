@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+cd $(readlink -f ${0} | xargs dirname)
+
+if mount | grep "/etc/resolv.conf" &> /dev/null; then
+	cp -f /etc/resolv.conf .
+	umount /etc/resolv.conf
+	mv -f ./resolv.conf /etc
+fi
+
+SESSION_PATH="supervise/dtach"
+rm -f ${SESSION_PATH}
+
+if ! [ -d supervise ]; then
+	ln -fsv $(mktemp -d) supervise
+fi
+
+dtach -n ${SESSION_PATH} -Ez expressvpnd
+
+WAIT=1
+until [ ${WAIT} -gt 5 ] || expressvpn status &> /dev/null; do
+	sleep ${WAIT}
+	((WAIT++))
+done
+
+expect ./activate.exp
+expressvpn connect ${SERVER}
+
+exec dtach -A ${SESSION_PATH} -Ez expressvpnd

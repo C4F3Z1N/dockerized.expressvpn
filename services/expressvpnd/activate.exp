@@ -1,0 +1,10 @@
+#!/usr/bin/env expect
+
+spawn -noecho expressvpn activate
+expect "code:"
+log_user 0
+send "$env(ACTIVATION_CODE)\r"
+log_user 1
+expect "information."
+send "n\r"
+expect eof
