@@ -15,7 +15,7 @@ if ! [ -d supervise ]; then
 	ln -fsv $(mktemp -d) supervise
 fi
 
-dtach -n ${SESSION_PATH} -Ez expressvpnd
+dtach -n ${SESSION_PATH} -r none -Ez expressvpnd
 
 WAIT=1
 until [ ${WAIT} -gt 5 ] || expressvpn status &> /dev/null; do
@@ -26,4 +26,4 @@ done
 expect ./activate.exp
 expressvpn connect ${SERVER}
 
-exec dtach -A ${SESSION_PATH} -Ez expressvpnd
+exec dtach -A ${SESSION_PATH} -r none -Ez expressvpnd
